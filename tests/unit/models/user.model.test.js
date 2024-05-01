@@ -6,9 +6,11 @@ describe('User model', () => {
     let newUser;
     beforeEach(() => {
       newUser = {
-        name: faker.name.findName(),
-        email: faker.internet.email().toLowerCase(),
-        password: 'password1',
+        userName: faker.name.findName(),
+        emailAddress: faker.internet.email().toLowerCase(),
+        accountNumber: faker.datatype.uuid(),
+        identityNumber: faker.datatype.uuid(),
+        password: 'abc123456',
         role: 'user',
       };
     });
@@ -18,7 +20,7 @@ describe('User model', () => {
     });
 
     test('should throw a validation error if email is invalid', async () => {
-      newUser.email = 'invalidEmail';
+      newUser.emailAddress = 'invalidEmail';
       await expect(new User(newUser).validate()).rejects.toThrow();
     });
 
@@ -47,8 +49,8 @@ describe('User model', () => {
     test('should not return user password when toJSON is called', () => {
       const newUser = {
         name: faker.name.findName(),
-        email: faker.internet.email().toLowerCase(),
-        password: 'password1',
+        emailAddress: faker.internet.email().toLowerCase(),
+        password: 'abc123456',
         role: 'user',
       };
       expect(new User(newUser).toJSON()).not.toHaveProperty('password');

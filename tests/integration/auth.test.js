@@ -23,8 +23,10 @@ describe('Auth routes', () => {
     let newUser;
     beforeEach(() => {
       newUser = {
-        name: faker.name.findName(),
-        email: faker.internet.email().toLowerCase(),
+        userName: faker.name.findName(),
+        emailAddress: faker.internet.email().toLowerCase(),
+        accountNumber: faker.datatype.uuid(),
+        identityNumber: faker.datatype.uuid(),
         password: 'password1',
       };
     });
@@ -35,8 +37,10 @@ describe('Auth routes', () => {
       expect(res.body.user).not.toHaveProperty('password');
       expect(res.body.user).toEqual({
         id: expect.anything(),
-        name: newUser.name,
-        email: newUser.email,
+        userName: newUser.userName,
+        emailAddress: newUser.emailAddress,
+        identityNumber: newUser.identityNumber,
+        accountNumber: newUser.accountNumber,
         role: 'user',
         isEmailVerified: false,
       });
@@ -44,7 +48,14 @@ describe('Auth routes', () => {
       const dbUser = await User.findById(res.body.user.id);
       expect(dbUser).toBeDefined();
       expect(dbUser.password).not.toBe(newUser.password);
-      expect(dbUser).toMatchObject({ name: newUser.name, email: newUser.email, role: 'user', isEmailVerified: false });
+      expect(dbUser).toMatchObject({
+        userName: newUser.userName,
+        emailAddress: newUser.emailAddress,
+        identityNumber: newUser.identityNumber,
+        accountNumber: newUser.accountNumber,
+        role: 'user',
+        isEmailVerified: false,
+      });
 
       expect(res.body.tokens).toEqual({
         access: { token: expect.anything(), expires: expect.anything() },
@@ -53,14 +64,14 @@ describe('Auth routes', () => {
     });
 
     test('should return 400 error if email is invalid', async () => {
-      newUser.email = 'invalidEmail';
+      newUser.emailAddress = 'invalidEmail';
 
       await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
     });
 
     test('should return 400 error if email is already used', async () => {
       await insertUsers([userOne]);
-      newUser.email = userOne.email;
+      newUser.emailAddress = userOne.emailAddress;
 
       await request(app).post('/v1/auth/register').send(newUser).expect(httpStatus.BAD_REQUEST);
     });
@@ -86,7 +97,7 @@ describe('Auth routes', () => {
     test('should return 200 and login user if email and password match', async () => {
       await insertUsers([userOne]);
       const loginCredentials = {
-        email: userOne.email,
+        emailAddress: userOne.emailAddress,
         password: userOne.password,
       };
 
@@ -94,8 +105,10 @@ describe('Auth routes', () => {
 
       expect(res.body.user).toEqual({
         id: expect.anything(),
-        name: userOne.name,
-        email: userOne.email,
+        userName: userOne.userName,
+        emailAddress: userOne.emailAddress,
+        identityNumber: userOne.identityNumber,
+        accountNumber: userOne.accountNumber,
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
       });
@@ -108,7 +121,7 @@ describe('Auth routes', () => {
 
     test('should return 401 error if there are no users with that email', async () => {
       const loginCredentials = {
-        email: userOne.email,
+        emailAddress: userOne.emailAddress,
         password: userOne.password,
       };
 
@@ -120,7 +133,7 @@ describe('Auth routes', () => {
     test('should return 401 error if password is wrong', async () => {
       await insertUsers([userOne]);
       const loginCredentials = {
-        email: userOne.email,
+        emailAddress: userOne.emailAddress,
         password: 'wrongPassword1',
       };
 
@@ -243,9 +256,12 @@ describe('Auth routes', () => {
       await insertUsers([userOne]);
       const sendResetPasswordEmailSpy = jest.spyOn(emailService, 'sendResetPasswordEmail');
 
-      await request(app).post('/v1/auth/forgot-password').send({ email: userOne.email }).expect(httpStatus.NO_CONTENT);
+      await request(app)
+        .post('/v1/auth/forgot-password')
+        .send({ emailAddress: userOne.emailAddress })
+        .expect(httpStatus.NO_CONTENT);
 
-      expect(sendResetPasswordEmailSpy).toHaveBeenCalledWith(userOne.email, expect.any(String));
+      expect(sendResetPasswordEmailSpy).toHaveBeenCalledWith(userOne.emailAddress, expect.any(String));
       const resetPasswordToken = sendResetPasswordEmailSpy.mock.calls[0][1];
       const dbResetPasswordTokenDoc = await Token.findOne({ token: resetPasswordToken, user: userOne._id });
       expect(dbResetPasswordTokenDoc).toBeDefined();
@@ -258,7 +274,10 @@ describe('Auth routes', () => {
     });
 
     test('should return 404 if email does not belong to any user', async () => {
-      await request(app).post('/v1/auth/forgot-password').send({ email: userOne.email }).expect(httpStatus.NOT_FOUND);
+      await request(app)
+        .post('/v1/auth/forgot-password')
+        .send({ emailAddress: userOne.emailAddress })
+        .expect(httpStatus.NOT_FOUND);
     });
   });
 
@@ -369,7 +388,7 @@ describe('Auth routes', () => {
         .set('Authorization', `Bearer ${userOneAccessToken}`)
         .expect(httpStatus.NO_CONTENT);
 
-      expect(sendVerificationEmailSpy).toHaveBeenCalledWith(userOne.email, expect.any(String));
+      expect(sendVerificationEmailSpy).toHaveBeenCalledWith(userOne.emailAddress, expect.any(String));
       const verifyEmailToken = sendVerificationEmailSpy.mock.calls[0][1];
       const dbVerifyEmailToken = await Token.findOne({ token: verifyEmailToken, user: userOne._id });
 

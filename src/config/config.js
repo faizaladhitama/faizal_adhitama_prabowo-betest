@@ -65,6 +65,6 @@ module.exports = {
   },
   redis: {
     uri: envVars.REDIS_URI,
-    expired: envVars.REDIS_EXPIRED
-  }
+    expired: envVars.REDIS_EXPIRED,
+  },
 };
