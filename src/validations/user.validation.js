@@ -3,17 +3,22 @@ const { password, objectId } = require('./custom.validation');
 
 const createUser = {
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
+    identityNumber: Joi.string().required(),
+    accountNumber: Joi.string().required(),
+    emailAddress: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
-    name: Joi.string().required(),
+    userName: Joi.string().required(),
     role: Joi.string().required().valid('user', 'admin'),
   }),
 };
 
 const getUsers = {
   query: Joi.object().keys({
-    name: Joi.string(),
-    role: Joi.string(),
+    userName: Joi.string().optional(),
+    role: Joi.string().optional(),
+    identityNumber: Joi.string().optional(),
+    accountNumber: Joi.string().optional(),
+    emailAddress: Joi.string().optional(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -23,6 +28,8 @@ const getUsers = {
 const getUser = {
   params: Joi.object().keys({
     userId: Joi.string().custom(objectId),
+    accountNumber: Joi.string(),
+    identityNumber: Joi.string(),
   }),
 };
 

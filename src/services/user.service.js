@@ -39,11 +39,11 @@ const getUserById = async (id) => {
 
 /**
  * Get user by email
- * @param {string} email
+ * @param {string} emailAddress
  * @returns {Promise<User>}
  */
-const getUserByEmail = async (email) => {
-  return User.findOne({ email });
+const getUserByEmail = async (emailAddress) => {
+  return User.findOne({ emailAddress });
 };
 
 /**
@@ -79,6 +79,24 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+/**
+ * Get user by accountNumber
+ * @param {ObjectId} accountNumber
+ * @returns {Promise<User>}
+ */
+const getUserByAccountNumber = async (accountNumber) => {
+  return User.findOne({ accountNumber });
+};
+
+/**
+ * Get user by identityNumber
+ * @param {ObjectId} identityNumber
+ * @returns {Promise<User>}
+ */
+const getUserByIdentityNumber = async (identityNumber) => {
+  return User.findOne({ identityNumber });
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -86,4 +104,6 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  getUserByAccountNumber,
+  getUserByIdentityNumber,
 };

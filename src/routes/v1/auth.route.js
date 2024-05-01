@@ -37,13 +37,19 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - email
+ *               - userName
+ *               - identityNumber
+ *               - accountNumber
+ *               - emailAddress
  *               - password
  *             properties:
- *               name:
+ *               userName:
  *                 type: string
- *               email:
+ *               identityNumber:
+ *                 type: string
+ *               accountNumber:
+ *                 type: string
+ *               emailAddress:
  *                 type: string
  *                 format: email
  *                 description: must be unique
@@ -53,8 +59,10 @@ module.exports = router;
  *                 minLength: 8
  *                 description: At least one number and one letter
  *             example:
- *               name: fake name
- *               email: fake@example.com
+ *               userName: fake name
+ *               identityNumber: "123456"
+ *               accountNumber: "123456"
+ *               emailAddress: fake@example.com
  *               password: password1
  *     responses:
  *       "201":
@@ -85,17 +93,17 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - emailAddress
  *               - password
  *             properties:
- *               email:
+ *               emailAddress:
  *                 type: string
  *                 format: email
  *               password:
  *                 type: string
  *                 format: password
  *             example:
- *               email: fake@example.com
+ *               emailAddress: fake@example.com
  *               password: password1
  *     responses:
  *       "200":
@@ -190,13 +198,13 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - emailAddress
  *             properties:
- *               email:
+ *               emailAddress:
  *                 type: string
  *                 format: email
  *             example:
- *               email: fake@example.com
+ *               emailAddress: fake@example.com
  *     responses:
  *       "204":
  *         description: No content

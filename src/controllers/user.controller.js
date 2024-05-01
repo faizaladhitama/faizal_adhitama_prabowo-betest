@@ -17,7 +17,14 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getUser = catchAsync(async (req, res) => {
-  const user = await userService.getUserById(req.params.userId);
+  let user = null;
+  if (req.params.userId) {
+    user = await userService.getUserById(req.params.userId);
+  } else if (req.params.accountNumber) {
+    user = await userService.getUserByAccountNumber(req.params.accountNumber);
+  } else if (req.params.identityNumber) {
+    user = await userService.getUserByIdentityNumber(req.params.identityNumber);
+  }
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
